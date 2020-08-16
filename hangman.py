@@ -1,0 +1,82 @@
+# Hangman Game
+import random
+import string
+# import pygame
+
+# pygame.init()
+
+# WIDTH = 800
+# HEIGHT = 600
+# gameDisplay = pygame.display.set_mode((WIDTH,HEIGHT))
+# pygame.display.set_caption('Hangman')
+
+WORDLIST_FILENAME = "words.txt"
+
+def load_words():
+    print("Loading word list from file...")
+    inFile = open(WORDLIST_FILENAME, 'r')
+    line = inFile.readline()
+    wordlist = line.split()
+    print("  ", len(wordlist), "words loaded.")
+    return wordlist
+
+def choose_word(list_of_words):
+	x = len(list_of_words) - 1
+	y = random.randint(0, x)
+	return list_of_words[y]
+
+def initialize_stats(stats, length_of_word):
+	stats["num_attempts"] = int(1.2*length_of_word)
+	stats["num_errors"] = 0
+	stats["available_letters"] = "abcdefghijklmnopqrstuvwxyz"
+	stats["temp_sol"] = "-"*length_of_word
+
+def print_stats(stats):
+	print("What we have so far: " + stats["temp_sol"])
+	print("Attempts Left: " + str(stats["num_attempts"]))
+	print("Available Letters: " + stats["available_letters"])
+
+def process_input(inp, stats, secret_word, length_of_word):
+	if(inp not in string.ascii_lowercase):
+		print("Error! Please enter a lowercase alphabetical character")
+	elif(inp not in stats["available_letters"]):
+		print("Error! You already guessed this letter. Please try again")
+	else:
+		stats["available_letters"] = stats["available_letters"].replace(inp, "")
+		if(inp not in secret_word):
+			print("Whoops! The letter you guessed is not in the secret word :(")
+			stats["num_errors"] = stats["num_errors"]  + 1
+			stats["num_attempts"] = stats["num_attempts"]  - 1
+		else:
+			print("Nice! The letter you guessed is indeed in the secret word!")
+			for i in range(length_of_word):
+				if(inp == secret_word[i]):
+					stats["temp_sol"] = stats["temp_sol"][:i] + inp + stats["temp_sol"][i+1:]
+			if(stats["temp_sol"] == secret_word):
+				stats["isGuessed"] = True
+
+def hangman():
+	list_of_words = load_words()
+	secret_word = choose_word(list_of_words)
+	length_of_word = len(secret_word)
+
+	stats = {"num_attempts":None, "num_errors":None, "available_letters":None, "temp_sol":None, "isGuessed":False}
+	initialize_stats(stats, length_of_word)
+
+	print("I am thinking of a " + str(length_of_word) + " letter word. Let's begin!")
+
+	while(stats["num_attempts"] > 0 and not stats["isGuessed"]):
+
+		print("****************************************************")
+
+		print_stats(stats)
+		inp = input("Please enter a letter: ")
+		process_input(inp, stats, secret_word, length_of_word)
+
+	if(stats["isGuessed"]):
+		print("Congratulations! You Won! The word was "  + secret_word)
+	else:
+		print("Sorry :( The correct word is " + secret_word)
+
+if __name__ == "__main__":
+    hangman()
