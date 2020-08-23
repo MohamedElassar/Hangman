@@ -1,17 +1,14 @@
 # Hangman Game
+#Author: Mohamed Elassar. Contact me: mohamedelassar1997@gmail.com
+#Year: 2020
+#Please read the associated ReadMe file to learn how to run this game. Enjoy :)
 import random
 import string
-# import pygame
-
-# pygame.init()
-
-# WIDTH = 800
-# HEIGHT = 600
-# gameDisplay = pygame.display.set_mode((WIDTH,HEIGHT))
-# pygame.display.set_caption('Hangman')
 
 WORDLIST_FILENAME = "words.txt"
 
+#Function to load a list of words into the program. The secret word will be selected randomly from this list
+#Please make sure you download the file "words.txt" alongside this file
 def load_words():
     print("Loading word list from file...")
     inFile = open(WORDLIST_FILENAME, 'r')
@@ -20,22 +17,31 @@ def load_words():
     print("  ", len(wordlist), "words loaded.")
     return wordlist
 
+#Function to choose a word randomly from the list of words imported from words.txt. I generate a random number between 0 and the length of the 
+#list of words. Then pick the word at that random index
 def choose_word(list_of_words):
 	x = len(list_of_words) - 1
 	y = random.randint(0, x)
 	return list_of_words[y]
 
+#To keep track of the user stats, I use a dictionary with the following variables: num_attempts, num_errors, available_letters (available to guess from), 
+#and temp_sol (the solution that the player has so far). This function initializes this dictionary
 def initialize_stats(stats, length_of_word):
 	stats["num_attempts"] = int(1.2*length_of_word)
 	stats["num_errors"] = 0
 	stats["available_letters"] = "abcdefghijklmnopqrstuvwxyz"
 	stats["temp_sol"] = "-"*length_of_word
 
+#Function to print all the stats after every round
 def print_stats(stats):
 	print("What we have so far: " + stats["temp_sol"])
 	print("Attempts Left: " + str(stats["num_attempts"]))
 	print("Available Letters: " + stats["available_letters"])
 
+#Function that processes the user's guess. First it checks if the letter inputter is a lowercase alphabetical character. Then, it checks
+#if the letter is in the list of available letters to guess from. If it is, the program then removes that letter from the list of pickable letters and proceeds to process
+#the letter: if the letter is NOT in the secret word, the number of attempts left is reduced by 1. Otherwise, the user's temporary solution is updated and every instance
+#of the guessed letter is shown
 def process_input(inp, stats, secret_word, length_of_word):
 	if(inp not in string.ascii_lowercase):
 		print("Error! Please enter a lowercase alphabetical character")
@@ -55,6 +61,7 @@ def process_input(inp, stats, secret_word, length_of_word):
 			if(stats["temp_sol"] == secret_word):
 				stats["isGuessed"] = True
 
+#Main hangman function. It keeps running as long as the user's number of attempts left is > 0 and he hasn't guessed the full word yet
 def hangman():
 	list_of_words = load_words()
 	secret_word = choose_word(list_of_words)
