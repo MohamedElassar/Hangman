@@ -4,7 +4,6 @@
 #Please read the associated ReadMe file to learn how to run this game. Enjoy :)
 import random
 import string
-import pygame
 
 WORDLIST_FILENAME = "words.txt"
 
